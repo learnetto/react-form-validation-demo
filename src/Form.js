@@ -16,35 +16,40 @@ class Form extends Component {
   handleUserInput (e) {
     const name = e.target.name;
     const value = e.target.value;
-    this.setState({[name]: value}, () => { this.validateField(name, value) });
+    this.setState({[name]: value},
+                  () => { this.validateField(name, value) });
   }
 
-  validateField(fieldName, value) {
-    let fieldValidationErrors = this.state.formErrors;
+validateField(fieldName, value) {
+  let fieldValidationErrors = this.state.formErrors;
 
-    switch(fieldName) {
-      case 'email':
-        if(!value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
-          fieldValidationErrors.email = ' is invalid';
-        } else {
-          fieldValidationErrors.email = '';
-        }
-        break;
-      case 'password':
-        if(value.length < 6) {
-          fieldValidationErrors.password = ' is too short';
-        } else {
-          fieldValidationErrors.password = '';
-        }
-        break;
-      default:
-        break;
-    }
-    this.setState({formErrors: fieldValidationErrors,
-                    formValid: fieldValidationErrors.email.length === 0 &&
-                                fieldValidationErrors.password.length === 0
-                  })
+  switch(fieldName) {
+    case 'email':
+      if(!value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+        fieldValidationErrors.email = ' is invalid';
+      } else {
+        fieldValidationErrors.email = '';
+      }
+      break;
+    case 'password':
+      if(value.length < 6) {
+        fieldValidationErrors.password = ' is too short';
+      } else {
+        fieldValidationErrors.password = '';
+      }
+      break;
+    default:
+      break;
   }
+  this.setState({formErrors: fieldValidationErrors,
+                  formValid: this.validateForm(fieldValidationErrors)
+                })
+}
+
+validateForm(fieldValidationErrors) {
+  return fieldValidationErrors.email.length === 0 &&
+         fieldValidationErrors.password.length === 0
+}
 
   errorClass(error) {
     return(error.length === 0 ? '' : 'has-error');
@@ -60,7 +65,6 @@ class Form extends Component {
         <div className={`form-group ${this.errorClass(this.state.formErrors.email)}`}>
           <label htmlFor="email">Email address</label>
           <input type="email" required className="form-control" name="email"
-            ref={(input) => { this.email = input; }}
             placeholder="Email"
             value={this.state.email}
             onChange={(event) => this.handleUserInput(event)}  />
