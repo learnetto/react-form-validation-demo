@@ -9,6 +9,8 @@ class Form extends Component {
       email: '',
       password: '',
       formErrors: {email: '', password: ''},
+      emailValid: false,
+      passwordValid: false,
       formValid: false
     }
   }
@@ -22,33 +24,29 @@ class Form extends Component {
 
 validateField(fieldName, value) {
   let fieldValidationErrors = this.state.formErrors;
+  let emailValid = this.state.emailValid;
+  let passwordValid = this.state.passwordValid;
 
   switch(fieldName) {
     case 'email':
-      if(!value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
-        fieldValidationErrors.email = ' is invalid';
-      } else {
-        fieldValidationErrors.email = '';
-      }
+      emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+      fieldValidationErrors.email = emailValid ? '' : ' is invalid';
       break;
     case 'password':
-      if(value.length < 6) {
-        fieldValidationErrors.password = ' is too short';
-      } else {
-        fieldValidationErrors.password = '';
-      }
+      passwordValid = value.length >= 6;
+      fieldValidationErrors.password = passwordValid ? '': ' is too short';
       break;
     default:
       break;
   }
   this.setState({formErrors: fieldValidationErrors,
-                  formValid: this.validateForm(fieldValidationErrors)
-                })
+                  emailValid: emailValid,
+                  passwordValid: passwordValid
+                }, this.validateForm);
 }
 
-validateForm(fieldValidationErrors) {
-  return fieldValidationErrors.email.length === 0 &&
-         fieldValidationErrors.password.length === 0
+validateForm() {
+  this.setState({formValid: this.state.emailValid && this.state.passwordValid});
 }
 
   errorClass(error) {
